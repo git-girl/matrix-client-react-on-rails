@@ -19,16 +19,20 @@ gem "puma", "~> 5.0"
 gem "jsbundling-rails"
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "turbo-rails"
+# gem "turbo-rails"
 
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-gem "stimulus-rails"
+# gem "stimulus-rails"
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
 # Use Redis adapter to run Action Cable in production
 gem "redis", "~> 4.0"
+
+gem "shakapacker", "= 6.6"
+
+gem "react_on_rails", "= 13.3"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
@@ -62,6 +66,7 @@ group :development do
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+  gem 'eslint-rails', '~> 1.3'
 end
 
 group :test do
@@ -69,11 +74,8 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "webdrivers"
+  gem "rspec", "~> 3.12"
+  gem "rspec-rails", "~> 6.0"
 end
 
-gem "shakapacker", "= 6.6"
-
-gem "react_on_rails", "= 13.3"
-
-gem "rspec", "~> 3.12"
-gem "rspec-rails", "~> 6.0"
+gem "foreman", "~> 0.87.2"
