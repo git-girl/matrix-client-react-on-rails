@@ -1,8 +1,9 @@
-import ReactOnRails from 'react-on-rails';
+import ReactOnRails from 'react-on-rails'; 
 
-import HelloWorld from '../bundles/HelloWorld/components/HelloWorld/HelloWorldServer';
+// Add things Server Rendering components here
+import Home from '../bundles/Home/components/Home/Home';
 
-// This is how react_on_rails can see the HelloWorld in the browser.
 ReactOnRails.register({
-  HelloWorld,
-});
+  Home,
+})
+

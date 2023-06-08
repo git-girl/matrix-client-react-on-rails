@@ -1,7 +1,12 @@
 Rails.application.routes.draw do
-  get 'hello_world', to: 'hello_world#index'
+  resources :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  get '/home/index', to: 
+    'home#index'
+  get 'sign_up', to: 
+    'home#sign_up'
 
-  # Defines the root path route ("/")
-  root "hello_world#index"
+  resource :user
+    
+  root "home#index"
 end

@@ -29,11 +29,24 @@ React diff:
               - Componenent CSS
     ```
 
-Tb(very)h: 
-- i still dont quite get the point is it only client side rendering? 
-- the modularity was always there with partials
+## What to bundle 
+"it depends"
 
-Also another Question: 
-- when do i start creating new packs/bundles. 
-  Like i do want to group stuff there.
-  - Everything that interacts maybe?
+- Identifying entry points (each thing directly rendered through a rails view) 
+- Shared Dependencies 
+- always watch out that bundle sizes don't grow to large. 
+
+## Links 
+- just do an `<a>` element its good to put the links in a constants 
+  definition file though in the bundle
+
+## Forms 
+- build out the form with JSX
+  - define some onSubmit event
+
+- need to match the rails API 
+  ``` js
+  import request from 'axios'
+  request.post('user', {user}, requestConfig);
+  ```
+- 

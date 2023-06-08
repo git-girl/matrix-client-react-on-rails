@@ -3,12 +3,21 @@
 - This is for me testing out and learning React on Rails  
   Notes i write can be found in `dev_doc/`
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+- [ ] set up locale 
+
+
+
+
+
+
+
+
+
 
 Things you may want to cover:
 
 * Ruby version
+3.2.1
 
 * System dependencies
 
