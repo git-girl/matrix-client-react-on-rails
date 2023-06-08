@@ -1,10 +1,19 @@
 # frozen_string_literal: true
 
+require 'matrix_sdk'
+
 class User < ApplicationRecord
-  include ActiveModel::SecurePassword
+  attr_accessor :password 
 
-  attr_accessor :password_digest
+  def get_access_token
+    api = MatrixSdk::Api.new 'https://matrix.org'
+    return false unless api.protocol? :CS
 
-  has_secure_password
+    
+    api.login user: username, password: password.to_s
 
+    puts api.whoami?
+
+    puts "access token: #{api.access_token}"
+  end
 end

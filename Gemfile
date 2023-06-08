@@ -66,6 +66,9 @@ group :development do
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+
+  gem "rubocop", "~> 1.52"
+  gem "rubocop-rails", "~> 2.19"
 end
 
 group :test do
@@ -80,3 +83,4 @@ end
 gem "foreman", "~> 0.87.2"
 
 gem "matrix_sdk", "~> 2.8"
+

@@ -31,14 +31,13 @@ const SignUp = (props) => {
       password: event.target.elements.password.value,
     }
 
-
     const requestConfig = {
       responseType: 'json',
       headers: ReactOnRails.authenticityHeaders(),
     };
 
     return request.
-      post('http://localhost:3000/user', {user}, requestConfig);
+      post('/user', {user}, requestConfig);
 
   };
   const handleUsernameChange = (event) => {
