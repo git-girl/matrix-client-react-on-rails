@@ -12,8 +12,6 @@ class User < ApplicationRecord
     
     api.login user: username, password: password.to_s
 
-    puts api.whoami?
-
-    puts "access token: #{api.access_token}"
+    api.access_token
   end
 end

@@ -15,7 +15,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_08_093415) do
     t.string "username"
     t.string "display_name"
     t.string "home_server"
-    t.string "password_digest"
+    t.string "access_token"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -6,13 +6,16 @@ class UsersController < ApplicationController
 
   def create
     @user = User.new(user_params)
-    access_token = @user.get_access_token
 
     # i only want to save the access token not 
     # the password otherwise danger danger
-    @user = @user.attributes.except("password")
+    @user = User.new(
+      @user.attributes.except('password').merge!(
+      access_token: @user.get_access_token
+      )
+    )
 
-    if access_token
+    if @user.access_token && !@user.password
       if @user.save 
           render json: @user, status: :created
       else
