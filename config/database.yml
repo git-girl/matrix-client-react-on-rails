@@ -65,6 +65,4 @@ test:
 #
 production:
   <<: *default
-  database: matrixclient_production
-  username: matrix_client
-  password: <%= ENV["MYAPP_DATABASE_PASSWORD"] %>
+  url: <%= ENV['DATABASE_URL'] %>
