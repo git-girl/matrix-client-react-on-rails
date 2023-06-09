@@ -13,8 +13,6 @@ class SyncJob
   # basic types like String, integer, boolean that are
   # supported by JSON. Complex Ruby objects will not work.
   def perform(access_token, home_server)
-    puts access_token, home_server
-
     client = MatrixSdk::Client.new(home_server, read_timeout: 600)
     client.api.access_token = access_token
     client.sync
@@ -26,7 +24,5 @@ class SyncJob
     # i think it would maybe be easier to deserialize those, but also more
     # work handling multiple cache entries
     Rails.cache.write(cache_key, YAML.dump(client), expires_in: 24.hours)
-
-    puts "cache_key: #{cache_key}"
   end
 end

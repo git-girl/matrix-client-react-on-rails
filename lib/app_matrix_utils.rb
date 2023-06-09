@@ -70,10 +70,6 @@ module AppMatrixUtils
   end
 
   def deserialze_client(serialized_client)
-    $stdout.write 'serialized_client: '
-    $stdout.write serialized_client
-    $stdout.write 'PERMITTED_CLASSES: '
-    $stdout.write PERMITTED_CLASSES
     Psych.safe_load(serialized_client,
                     permitted_classes: PERMITTED_CLASSES,
                     aliases: true)

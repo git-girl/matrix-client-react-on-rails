@@ -13,10 +13,7 @@ const Home = (props) => {
 
   // TODO: im still not getting the rerender properly 
   const handleSignUpSuccess = (newUser) => {
-    console.debug(newUser)
     setUser(newUser);
-
-    console.debug(user)
 
     const requestConfig = {
       responseType: 'json',
@@ -26,7 +23,6 @@ const Home = (props) => {
     request
       .get('/sync', user, requestConfig)
       .then((response) => {
-        console.log("triggered sync")
       })
       .catch((error) => {
         // TODO: handle error
@@ -42,7 +38,6 @@ const Home = (props) => {
     request
       .get('/rooms', user, requestConfig)
       .then((response) => {
-        console.debug(response.data)
         setRooms(response.data)
       })
       .catch((error) => {

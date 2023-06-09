@@ -7,7 +7,9 @@ const RoomsList = (props, railsContext) => {
   const [user] = useState(props.user);
   const [rooms] = useState(props.rooms);
 
-  if(props.rooms.rooms !== []){ 
+  console.debug(props.rooms)
+
+    if (!(props.rooms === undefined || props.rooms.length == 0)) {
     return (
         props.rooms.rooms.map( (data) => {
         return (
