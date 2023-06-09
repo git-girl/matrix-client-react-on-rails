@@ -1,9 +1,7 @@
 class HomeController < ApplicationController
 
   def index 
-    @home_props = { 
-      username: "TODO: add user model and fetch name" 
-    }
+    @home_props = { user: session[:user] }
   end
 
   def sign_up; end

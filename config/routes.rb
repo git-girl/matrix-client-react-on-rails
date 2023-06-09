@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   get 'sign_up', to: 
     'home#sign_up'
 
-  resource :user
+  resource :user do 
+    get :rooms
+  end
     
   root "home#index"
 end

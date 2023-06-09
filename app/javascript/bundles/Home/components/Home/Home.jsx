@@ -1,31 +1,38 @@
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 import style from './Home.module.css'; 
-import * as paths from '../../constants/paths';
+import SignUp from '../SignUp/SignUp';
+import RoomsList from '../RoomsList/RoomsList';
+
 
 // Home is a function with arg props that returns the body
 const Home = (props) => { 
-  const [username]  = useState(props.username);
+  const [user, setUser]  = useState(props.user);
 
-  return ( 
-    <div>
-      <div class={style.fancy_font}> 
-        <h2>
-          Hello, {username}
-        </h2>
+  // TODO: im still not getting the rerender properly 
+  const handleSignUpSuccess = (newUser) => {
+    setUser(newUser);
+  };
+
+  if(user) {
+    return (
+      <div>
+      <h2 className={style.fancy_font}>Hey there, {user.username}!</h2> 
+
       </div>
-
-        <ul> 
-          <li> 
-            <a href={paths.SIGNUP_PATH}>Login to your Matrix account</a>
-          </li>
-        </ul>
-    </div>
-  )
+    );
+  } else {
+    return (
+      <div>
+      <h2>Hey there, you can signup below</h2> 
+      <SignUp onSuccess={handleSignUpSuccess} />
+      </div>
+    );
+  }
 }
 
 Home.propTypes = { 
-  username: PropTypes.string.isRequired,
+  // user: PropTypes.object.isRequired,
 }
 
 export default Home;
