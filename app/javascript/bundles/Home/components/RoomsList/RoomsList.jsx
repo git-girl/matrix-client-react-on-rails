@@ -3,7 +3,8 @@ import React, {useState} from 'react';
 import * as paths from '../../constants/paths';
 import request from 'axios';
 
-const RoomsList = (props) => { 
+const RoomsList = (props, railsContext) => { 
+  console.debug(railsContext)
   const [user] = useState(props.user);
   const [rooms, setRooms] = useState(props.rooms);
 
@@ -13,7 +14,7 @@ const RoomsList = (props) => {
       headers: ReactOnRails.authenticityHeaders(),
     };
     request
-      .get('/user/rooms', { user }, requestConfig)
+      .get('/rooms',{} , requestConfig)
       .then((response) => {
         onSuccess(response.data);
       })
@@ -36,5 +37,6 @@ const RoomsList = (props) => {
 
 RoomsList.propTypes = { 
   user: PropTypes.object.isRequired,
+  onSuccess: PropTypes.func.isRequired
 }
 export default RoomsList;

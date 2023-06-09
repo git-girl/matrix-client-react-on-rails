@@ -4,7 +4,7 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 
 // TODO: rename to SignUpForm
-const SignUp = (props) => { 
+const SignUp = ({onSuccess}) => { 
 
   // INFO: this declares a new state to be Used and the second arg is the setter function
   const [user, setUser] = useState({});
@@ -33,8 +33,6 @@ const SignUp = (props) => {
     );
     setGreeting(greetingString);
 
-    // TODO: learn the proper way to do this, 
-    // I think you are supposed to track the state better
     let user = {
       username: event.target.elements.username.value,
       password: event.target.elements.password.value,
@@ -47,7 +45,7 @@ const SignUp = (props) => {
     };
 
     request
-      .post('/user', { user }, requestConfig)
+      .post('/session', user, requestConfig)
       .then((response) => {
         onSuccess(response.data);
       })

@@ -67,8 +67,14 @@ group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
 
+  gem "reek", "~> 6.1"
   gem "rubocop", "~> 1.52"
   gem "rubocop-rails", "~> 2.19"
+  gem "rubocop-performance", "~> 1.18"
+  gem "rubocop-rspec", "~> 2.22"
+  gem "simplecov", "~> 0.22.0"
+  gem "solargraph", "~> 0.49.0"
+  gem "solargraph-rails", "~> 1.1"
 end
 
 group :test do
@@ -87,3 +93,7 @@ gem "matrix_sdk", "~> 2.8"
 gem "sidekiq", "~> 7.1"
 
 gem "hiredis", "~> 0.6.3"
+
+
+
+gem "erb_lint", "~> 0.4.0"
