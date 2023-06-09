@@ -23,6 +23,9 @@ Things you may want to cover:
 
 * Configuration
 
+- make sure you have a file `tmp/caching-dev.txt` 
+  so that caching is enabled. 
+
 * Database creation
 
 * Database initialization

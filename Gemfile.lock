@@ -96,6 +96,7 @@ GEM
     foreman (0.87.2)
     globalid (1.1.0)
       activesupport (>= 5.0)
+    hiredis (0.6.3)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     io-console (0.6.0)
@@ -193,6 +194,8 @@ GEM
       rails (>= 5.2)
       rainbow (~> 3.0)
     redis (4.8.1)
+    redis-client (0.14.1)
+      connection_pool
     regexp_parser (2.8.0)
     reline (0.3.5)
       io-console (~> 0.5)
@@ -246,6 +249,11 @@ GEM
       rack-proxy (>= 0.6.1)
       railties (>= 5.2)
       semantic_range (>= 2.3.0)
+    sidekiq (7.1.1)
+      concurrent-ruby (< 2)
+      connection_pool (>= 2.3.0)
+      rack (>= 2.2.4)
+      redis-client (>= 0.14.0)
     sprockets (4.2.0)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -285,6 +293,7 @@ DEPENDENCIES
   capybara
   debug
   foreman (~> 0.87.2)
+  hiredis (~> 0.6.3)
   jbuilder
   jsbundling-rails
   matrix_sdk (~> 2.8)
@@ -299,6 +308,7 @@ DEPENDENCIES
   rubocop-rails (~> 2.19)
   selenium-webdriver
   shakapacker (= 6.6)
+  sidekiq (~> 7.1)
   sprockets-rails
   tzinfo-data
   web-console

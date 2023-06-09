@@ -84,3 +84,6 @@ gem "foreman", "~> 0.87.2"
 
 gem "matrix_sdk", "~> 2.8"
 
+gem "sidekiq", "~> 7.1"
+
+gem "hiredis", "~> 0.6.3"
