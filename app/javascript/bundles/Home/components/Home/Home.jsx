@@ -9,6 +9,7 @@ import request from 'axios';
 // Home is a function with arg props that returns the body
 const Home = (props) => { 
    const [user, setUser]  = useState(props.user);
+   const [rooms, setRooms] = useState([]);
 
   // TODO: im still not getting the rerender properly 
   const handleSignUpSuccess = (newUser) => {
@@ -42,6 +43,7 @@ const Home = (props) => {
       .get('/rooms', user, requestConfig)
       .then((response) => {
         console.debug(response.data)
+        setRooms(response.data)
       })
       .catch((error) => {
         // TODO: handle error
@@ -53,7 +55,11 @@ const Home = (props) => {
       <div>
       <h2 className={style.fancy_font}>Hey there, {user.username}!</h2> 
       
-      <a onClick={getRooms}>Console log my Rooms</a>
+      <a onClick={getRooms}>Get my Rooms</a>
+
+      <ul>
+        <RoomsList rooms={ rooms }/>
+      </ul>
 
       </div>
     );
