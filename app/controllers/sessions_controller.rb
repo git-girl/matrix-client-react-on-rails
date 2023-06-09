@@ -43,9 +43,9 @@ class SessionsController < ApplicationController
     end
   end
 
+  # TODO: properly construct a decent rooms object
   def rooms
     serialized_client = Rails.cache.read(session[:cache_key])
-    puts serialized_client.class
 
     unless serialized_client
       render json: {

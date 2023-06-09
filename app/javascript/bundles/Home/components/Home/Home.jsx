@@ -11,7 +11,6 @@ import Loading from "../Loading/Loading";
 const Home = (props) => {
   const [user, setUser] = useState(props.user);
   const [rooms, setRooms] = useState(props.rooms);
-  const [renderRoomsSection, setRenderRoomsSection] = useState(false);
 
   const handleSignUpSuccess = (newUser) => {
     const requestConfig = {
@@ -21,8 +20,12 @@ const Home = (props) => {
     request
       .get("/sync", user, requestConfig)
       .then(() => {
+        // BUG: this Is the issue this only means that i triggered 
+        // the sync but not that it is complete. 
+        // i need to get a thing that is check for sync complete
+        // NOTE: I'm not using ActionCable but with action cable 
+        // i could do this a bit better with the async stuff
         setUser(newUser);
-        setRenderRoomsSection(true);
       })
       .catch((error) => {
         // TODO: handle error
@@ -45,15 +48,13 @@ const Home = (props) => {
       });
   };
 
-  // TODO: Loading Component
-  // if renderRoomsSection -> else render Loading Component
-  // with msg Syncing
-
   // TODO: and a username component
   // -> could have a link for settings but meh
   // <h2 className={style.fancy_font}>{user.username}</h2>
 
   if (Util.object_vals_not_null(user)) {
+    console.debug(user)
+    console.log(rooms)
     if (rooms) {
       return (
         <div>
