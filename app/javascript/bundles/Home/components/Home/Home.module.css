@@ -3,3 +3,7 @@
 .fancy_font { 
   font-family: 'Nabla';
 }
+
+body {
+  margin: 2.5%;  
+}

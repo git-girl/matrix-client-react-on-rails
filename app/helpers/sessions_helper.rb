@@ -26,9 +26,10 @@ module SessionsHelper
   def get_room_display_names(serialized_client)
     client = deserialze_client(serialized_client)
 
-    # BUG: if there was a sync then
-    # this fails because serlialized client
-    # has been read out of cache?
+    # BUG: This sometimes gets called for
+    # MatrixSdk::Api idk why and
+    # how this happens i think its reading
+    # bad serialized_client
     client.rooms.map(&:display_name)
   end
 end

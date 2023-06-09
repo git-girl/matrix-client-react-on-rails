@@ -13,6 +13,7 @@ class SessionsController < ApplicationController
     )
     session[:password] = nil
 
+    session[:username] = session_params[:username]
     session[:home_server] = session_params[:home_server]
     session[:access_token] = access_token
 
@@ -44,6 +45,7 @@ class SessionsController < ApplicationController
 
   def rooms
     serialized_client = Rails.cache.read(session[:cache_key])
+    puts serialized_client.class
 
     unless serialized_client
       render json: {
