@@ -1,4 +1,5 @@
 require 'matrix_sdk'
+require 'yaml'
 
 class SyncJob
   include Sidekiq::Job
@@ -13,12 +14,15 @@ class SyncJob
     client.api.access_token = access_token
     client.sync
 
-    # ISSUE: cannot write client (unserializable) to cache
+    cache_key = "sync_job:#{jid}"
 
-    cache_key = SecureRandom.hex(16)
-    Rails.cache.write(cache_key, client, expires_in: 24.hours) 
+    # NOTE: Rather then using the YAML dump i might be able to user the Tuny Cache 
+      # but there are multiple Matrix caches. 
+      # i think it would maybe be easier to deserialize those, but also more 
+      # work handling multiple cache entries 
+    Rails.cache.write(cache_key, YAML::dump(client), expires_in: 24.hours) 
 
-    session[:synced_client_key] = cache_key
-    puts "cache at cache_key: ", Rails.cache.read(cache_key)
+    puts "cache_key: #{cache_key}"
+    
   end
 end

@@ -45,3 +45,6 @@
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+
+# Ignore redis binary dump (dump.rdb) files
+*.rdb
