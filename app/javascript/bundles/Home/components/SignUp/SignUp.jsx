@@ -2,6 +2,7 @@ import request from 'axios';
 
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
+import Loading from '../Loading/Loading'
 
 // TODO: rename to SignUpForm
 const SignUp = ({onSuccess}) => { 
@@ -9,11 +10,7 @@ const SignUp = ({onSuccess}) => {
   // INFO: this declares a new state to be Used and the second arg is the setter function
   const [user, setUser] = useState({});
   const [username, setUsername] = useState('');
-  const [greeting, setGreeting] = useState(
-    <p>
-    Please sign into your matrix account.
-    </p>
-  );
+  const [greeting, setGreeting] = useState(<p></p>);
   const [homeServer, setHomeServer] = useState();
 
   // TODO: display loading animation
@@ -27,16 +24,17 @@ const SignUp = ({onSuccess}) => {
     // somewhat redundant
     const greetingString = (
       <div>
-        <h2>Hey there, @{username}! Getting things ready for you :)</h2>
+        <p>Hey there, @{username}! Getting things ready for you :)</p>
         <p>Checking your credentials against {formHomeServer}</p>
       </div>
     );
-    setGreeting(greetingString);
+    setGreeting(<Loading text={ greetingString } />);
 
     let user = {
       username: event.target.elements.username.value,
       password: event.target.elements.password.value,
-      home_server: `https://${formHomeServer}` ,
+      // NOTE: dont send https because only want the domain
+      home_server: formHomeServer ,
     }
 
     const requestConfig = {

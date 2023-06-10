@@ -10,6 +10,8 @@ import consumer from "channels/consumer";
 
 // Home is a function with arg props that returns the body
 const Home = (props) => {
+  // INFO: you can use syncComlete if you add stuff to change 
+  // the user details as to not trigger a sync
   const [syncComplete, setSyncComplete] = useState(false)
   const [user, setUser] = useState(props.user);
   const [rooms, setRooms] = useState(props.rooms);
@@ -38,7 +40,8 @@ const Home = (props) => {
     request
       .get("/rooms", user, requestConfig)
       .then((response) => {
-        setRooms(response.data.rooms);
+        // response is a id display_name kv pair
+        setRooms(response.data);
       })
       .catch((error) => {
         // TODO: handle error
@@ -46,8 +49,10 @@ const Home = (props) => {
   };
 
   useEffect(() => {
-    const subscription = consumer.subscriptions.create("SyncChannel", {
+    const subscription = consumer.subscriptions.create(
+      { channel: "SyncChannel", user: user }, {
       received(data) {
+        console.log("Synced successfully")
         if (data.message === "SYNCJOB_COMPLETE") {
           setSyncComplete(true);
           getRooms();
@@ -58,6 +63,7 @@ const Home = (props) => {
       subscription.unsubscribe();
     };
   }, [user]);
+
   // TODO: and a username component
   // -> could have a link for settings but meh
   // <h2 className={style.fancy_font}>{user.username}</h2>

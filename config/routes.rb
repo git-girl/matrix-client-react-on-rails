@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  resources :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   get '/home/index', to:
     'home#index'
@@ -16,6 +15,9 @@ Rails.application.routes.draw do
 
   get '/sync', to:
     'sessions#sync'
+
+  post '/stream_room', to:
+    'sessions#stream_room'
 
   root 'home#index'
 end

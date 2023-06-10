@@ -30,6 +30,7 @@ module AppMatrixUtils
     MatrixSdk::Util::StateEventCache,
     MatrixSdk::Util::TinycacheAdapter,
     Symbol,
+    Proc,
     URI::HTTPS,
     URI::RFC3986_Parser,
     Regexp,

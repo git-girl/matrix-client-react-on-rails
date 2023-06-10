@@ -4,6 +4,7 @@
 class HomeController < ApplicationController
   include SessionsHelper
 
+  # TODO: lean controller fat models
   def index
     @home_props = if session[:cache_key]
                     {
@@ -11,10 +12,7 @@ class HomeController < ApplicationController
                         username: session[:username],
                         home_server: session[:home_server]
                       },
-                      # TODO: find a better way to store this stuff 
-                      # this always triggers a deserialization which 
-                      # is expensive
-                      rooms: get_room_display_names(
+                      rooms: get_rooms(
                         Rails.cache.read(session[:cache_key])
                       )
                     }
