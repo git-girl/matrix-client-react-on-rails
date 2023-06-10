@@ -31,7 +31,10 @@ class SessionsController < ApplicationController
         session[:access_token],
         session[:home_server]
       )
+
       session[:cache_key] = "sync_job:#{sync_job_jib}"
+
+      ActionCable.server.broadcast('sync_channel', { message: 'SYNCJOB_STARTED' })
 
       render json: {},
              status: :created
@@ -44,6 +47,9 @@ class SessionsController < ApplicationController
   end
 
   # TODO: properly construct a decent rooms object
+  #
+  # CONSIDER: this entire session cache_key might be better
+  # implemeneted as an ActionCable thing no?
   def rooms
     serialized_client = Rails.cache.read(session[:cache_key])
 
@@ -56,7 +62,7 @@ class SessionsController < ApplicationController
 
     rooms = get_room_display_names(serialized_client)
 
-    render json: { rooms: rooms }, status: :created
+    render json: { rooms: }, status: :created
   end
 
   private

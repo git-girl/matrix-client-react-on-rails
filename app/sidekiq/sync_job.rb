@@ -2,12 +2,11 @@
 
 require 'matrix_sdk'
 require 'yaml'
+require 'action_cable/server'
 
 # Performs SyncJob, needs to be sync otherwise Stack blows up
 class SyncJob
   include Sidekiq::Job
-
-  # TODO: set Up Prod Redis
 
   # NOTE: Your perform method arguments must be simple,
   # basic types like String, integer, boolean that are
@@ -24,5 +23,7 @@ class SyncJob
     # i think it would maybe be easier to deserialize those, but also more
     # work handling multiple cache entries
     Rails.cache.write(cache_key, YAML.dump(client), expires_in: 24.hours)
+
+    ActionCable.server.broadcast('sync_channel', { message: 'SYNCJOB_COMPLETE' })
   end
 end

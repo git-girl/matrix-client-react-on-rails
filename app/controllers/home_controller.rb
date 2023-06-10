@@ -7,7 +7,7 @@ class HomeController < ApplicationController
       user: {
         username: session[:username],
         home_server: session[:home_server]
-      }
+      },
     }
   end
 end
