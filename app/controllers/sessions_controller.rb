@@ -80,7 +80,7 @@ class SessionsController < ApplicationController
     client.sync
     client.listen_for_events(timeout: 5)
 
-    mcj_id = MatrixClientJob()
+    mcj_id = MatrixClientJob.perform_async(user.serialize, user.matrix_client_channel_name)
     # puts client.methods
     # room = join_room(serialized_client, session_params[:room_id])
     # client.join_room(room)
