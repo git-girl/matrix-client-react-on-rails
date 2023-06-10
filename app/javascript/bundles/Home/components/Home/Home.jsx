@@ -7,7 +7,6 @@ import request from "axios";
 import Util from "../../utilities.js";
 import Loading from "../Loading/Loading";
 import consumer from "channels/consumer";
-import * as ActionCable from "@rails/actioncable";
 
 // Home is a function with arg props that returns the body
 const Home = (props) => {
@@ -39,7 +38,7 @@ const Home = (props) => {
     request
       .get("/rooms", user, requestConfig)
       .then((response) => {
-        setRooms(response.data);
+        setRooms(response.data.rooms);
       })
       .catch((error) => {
         // TODO: handle error
