@@ -97,7 +97,7 @@ const Home = (props) => {
           </div>
 
           <div className={style.active_room}> 
-            <ActiveRoom room={activeRoom} user={user}/>
+            <ActiveRoom room={activeRoom} user={user} getRoom={getRoom}/>
           </div>
         </div>
       );

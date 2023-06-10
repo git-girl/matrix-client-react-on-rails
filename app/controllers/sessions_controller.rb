@@ -72,7 +72,7 @@ class SessionsController < ApplicationController
     # serialized_client = Rails.cache.read(user.cache_key)
     # client = deserialze_client(serialized_client)
     #
-    # puts client.class
+    # puts client.classsessioncont
     # client.listen_for_events(timeout: 5)
 
     client = MatrixSdk::Client.new(user.home_server, read_timeout: 600)

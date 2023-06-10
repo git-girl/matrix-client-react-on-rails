@@ -8,6 +8,15 @@ const ActiveRoom = (props) => {
   const [room, setRoom] = useState(props.room)
   const [user] = useState(props.user)
   const [matrixEvents, setMatrixEvents] = useState([])
+  const getRoom = props.getRoom
+
+  // TODO: this can trigger room load but put in a 
+  // better place so i dont get constant requests
+  // const getRoomData = (room) => {
+  //   const roomId = Object.keys(room)[0];
+  //   getRoom(roomId);
+  // }
+  // getRoomData(room);
 
   // TODO: I THINK THIS IS NOT RERENDERING ONCE I SETSTATE 
   // THE MATRIXEVENTS
@@ -68,6 +77,7 @@ const ActiveRoom = (props) => {
 ActiveRoom.propTypes = {
   room: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
+  getRoom: PropTypes.func.isRequired,
 };
 
 export default ActiveRoom;

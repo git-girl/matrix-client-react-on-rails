@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Is for streaming any updates to rooms
-# is a bit pointless as you could just transmit the new 
+# is a bit pointless as you could just transmit the new
 # rooms
 class RoomsChannel < ApplicationCable::Channel
   def subscribed
