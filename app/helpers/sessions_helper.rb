@@ -20,6 +20,7 @@ module SessionsHelper
   end
 
   def get_rooms(serialized_client)
+    puts serialized_client
     rooms = {}
     client = deserialze_client(serialized_client)
 

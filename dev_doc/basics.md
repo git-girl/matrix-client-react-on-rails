@@ -102,3 +102,6 @@ React diff:
       subscription.unsubscribe();
     };
   ```
+
+## QUESTIONS: 
+- where do i start putting all the requests that pile up in the App Component?

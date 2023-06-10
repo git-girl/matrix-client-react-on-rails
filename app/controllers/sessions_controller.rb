@@ -17,8 +17,7 @@ class SessionsController < ApplicationController
     user = User.new(session_params[:username],
                     session_params[:home_server],
                     client.api.access_token,
-                    nil, # no cache_key yet
-                    )
+                    nil) # no cache_key yet
     session[:user] = user.serialize
 
     # this acts as a confirmation
@@ -31,7 +30,6 @@ class SessionsController < ApplicationController
   # get request
   def sync
     user = User.from_serialized(session[:user])
-    pp user
 
     client = MatrixSdk::Client.new(user.home_server, read_timeout: 600)
     client.api.access_token = user.access_token
@@ -39,6 +37,8 @@ class SessionsController < ApplicationController
 
     user.cache_key = SecureRandom.uuid
     Rails.cache.write(user.cache_key, YAML.dump(client), expires_in: 24.hours)
+
+    session[:user] = user.serialize
 
     render json: {
       username: user.username,
@@ -49,7 +49,8 @@ class SessionsController < ApplicationController
   # TODO: this entire session cache_key might be better
   # implemeneted as an ActionCable thing no?
   def rooms
-    serialized_client = Rails.cache.read(session[:cache_key])
+    user = User.from_serialized(session[:user])
+    serialized_client = Rails.cache.read(user.cache_key)
 
     unless serialized_client
       render json: {
@@ -58,21 +59,33 @@ class SessionsController < ApplicationController
       }
     end
 
+    # TODO: also get something like current room from the room
+    # you last sent a message
     rooms = get_rooms(serialized_client)
 
     render json: rooms, status: :created
   end
 
   def stream_room
-    # TODO: 1. check for sync
+    user = User.from_serialized(session[:user])
 
-    # 2. get the client
-    serialized_client = Rails.cache.read(session[:cache_key])
+    # serialized_client = Rails.cache.read(user.cache_key)
+    # client = deserialze_client(serialized_client)
+    #
+    # puts client.class
+    # client.listen_for_events(timeout: 5)
 
-    room = join_room(serialized_client, session_params[:room_id])
-    client.join_room(room)
-    room.on_event.add_handler { |event| on_message(room, event) }
-    client.start_listener_thread
+    client = MatrixSdk::Client.new(user.home_server, read_timeout: 600)
+    client.api.access_token = user.access_token
+    client.sync
+    client.listen_for_events(timeout: 5)
+
+    mcj_id = MatrixClientJob()
+    # puts client.methods
+    # room = join_room(serialized_client, session_params[:room_id])
+    # client.join_room(room)
+    # room.on_event.add_handler { |event| on_message(room, event) }
+    # client.start_listener_thread
 
     render json: {}, status: :created
   end
@@ -81,8 +94,8 @@ class SessionsController < ApplicationController
 
   def session_params
     params.require(:session).permit(:username,
-                                 :password,
-                                 :home_server,
-                                 :room_id)
+                                    :password,
+                                    :home_server,
+                                    :room_id)
   end
 end

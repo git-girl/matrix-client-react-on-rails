@@ -7,3 +7,18 @@
 body {
   margin: 2.5%;  
 }
+
+.flex_container { 
+  display: flex;
+}
+
+.active_room { 
+  flex: 8;
+  border: 1px solid #000;
+
+}
+
+.room_list {
+  flex: 1;
+  padding-right: 2.5%;
+}

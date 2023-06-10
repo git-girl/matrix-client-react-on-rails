@@ -6,23 +6,21 @@ class HomeController < ApplicationController
 
   # TODO: lean controller fat models
   def index
-    @home_props = if session[:cache_key]
-                    {
-                      user: {
-                        username: session[:username],
-                        home_server: session[:home_server]
-                      },
-                      rooms: get_rooms(
-                        Rails.cache.read(session[:cache_key])
-                      )
-                    }
-                  else
-                    {
-                      user: {
-                        username: session[:username],
-                        home_server: session[:home_server]
-                      }
-                    }
-                  end
+    if session[:user]
+      user = User.from_serialized(session[:user])
+      @home_props = {
+        user: {
+          username: user.username,
+          home_server: user.home_server
+        }
+      }
+    else
+      @home_props = {
+        user: {
+          username: nil,
+          home_server: nil
+        }
+      }
+    end
   end
 end

@@ -7,14 +7,22 @@ import request from "axios";
 import Util from "../../utilities.js";
 import Loading from "../Loading/Loading";
 import consumer from "channels/consumer";
+import ActiveRoom from "../ActiveRoom/ActiveRoom"
 
 // Home is a function with arg props that returns the body
 const Home = (props) => {
-  // INFO: you can use syncComlete if you add stuff to change 
+  // INFO: you can use syncComlete if you add stuff to change
   // the user details as to not trigger a sync
-  const [syncComplete, setSyncComplete] = useState(false)
+  const [syncComplete, setSyncComplete] = useState(false);
   const [user, setUser] = useState(props.user);
-  const [rooms, setRooms] = useState(props.rooms);
+  const [rooms, setRooms] = useState(Util.tryGetRoomsLocalStorage());
+  // TODO: also get something like current room from the room
+  // you last sent a message
+  const [activeRoom, setActiveRoom] = useState( () => {
+    if (Util.tryGetRoomsLocalStorage()) {
+      return Util.getFirstElementOfRooms(rooms)
+    }}
+  )
 
   const handleSignUpSuccess = (newUser) => {
     const requestConfig = {
@@ -24,13 +32,15 @@ const Home = (props) => {
     request
       .get("/sync", user, requestConfig)
       .then(() => {
-        setUser(newUser);
+        // get rooms as a callback so after newUser has been set
+        setUser(newUser, getRooms());
       })
       .catch((error) => {
         // TODO: handle error
       });
   };
 
+  // ROOM COLLECTION
   const getRooms = () => {
     const requestConfig = {
       responseType: "json",
@@ -41,29 +51,34 @@ const Home = (props) => {
       .get("/rooms", user, requestConfig)
       .then((response) => {
         // response is a id display_name kv pair
-        setRooms(response.data);
+        setRooms(response.data, setActiveRoom(rooms[0]));
+        // store it in loaclStorage
+        window.localStorage.setItem("rooms", JSON.stringify(response.data));
       })
       .catch((error) => {
         // TODO: handle error
       });
   };
 
-  useEffect(() => {
-    const subscription = consumer.subscriptions.create(
-      { channel: "SyncChannel", user: user }, {
-      received(data) {
-        console.log("Synced successfully")
-        if (data.message === "SYNCJOB_COMPLETE") {
-          setSyncComplete(true);
-          getRooms();
-        }
-      },
-    });
-    return () => {
-      subscription.unsubscribe();
+  // SINGLE ROOM 
+  const getRoom = (room_id) => { 
+    const requestConfig = {
+      responseType: "json",
+      headers: ReactOnRails.authenticityHeaders(),
     };
-  }, [user]);
 
+    const requestData = { 
+      room_id: room_id
+    }
+    request
+      .post("/stream_room", requestData , requestConfig)
+      .then((response) => {
+        console.debug(response)
+      })
+      .catch((error) => {
+        // TODO: handle error
+      });
+  };
   // TODO: and a username component
   // -> could have a link for settings but meh
   // <h2 className={style.fancy_font}>{user.username}</h2>
@@ -71,14 +86,20 @@ const Home = (props) => {
   if (Util.object_vals_not_null(user)) {
     if (rooms) {
       return (
-        <div>
-          <ul>
-            <RoomsList rooms={rooms} />
-          </ul>
+        <div className={style.flex_container}>
+          <div className={style.room_list}> 
+            <ul>
+              <RoomsList rooms={rooms} roomEnterClick={getRoom} />
+            </ul>
+          </div>
+
+          <div className={style.active_room}> 
+            <ActiveRoom room={activeRoom}/>
+          </div>
         </div>
       );
     } else {
-           return <Loading text="Fetching your Rooms" />;
+      return <Loading text="Fetching your Rooms" />;
     }
   } else {
     return (
