@@ -1,57 +1,49 @@
 # frozen_string_literal: true
 
+require_relative '../poros/user'
+
 # This is the main API to interact with the matrix_client
 # i.e fetching rooms or stuff like this
 class SessionsController < ApplicationController
   include SessionsHelper
 
   def create
-    access_token = get_access_token(
-      session_params[:home_server],
-      session_params[:username],
-      session_params[:password]
-    )
-    session[:password] = nil
-
-    session[:username] = session_params[:username]
-    session[:home_server] = session_params[:home_server]
-    session[:access_token] = access_token
-
-    @client = MatrixSdk::Client.new(
+    client = MatrixSdk::Client.new(
       session_params[:home_server],
       read_timeout: 600
     )
-    client.api.access_token = access_token
-    client.sync
-  
+    client.login session_params[:username], session_params[:password]
+
+    user = User.new(session_params[:username],
+                    session_params[:home_server],
+                    client.api.access_token,
+                    nil, # no cache_key yet
+                    )
+    session[:user] = user.serialize
+
     # this acts as a confirmation
-    render json: { username: session_params[:username],
-                   home_server: session_params[:home_server] },
-           status: :created
+    render json: {
+      username: user.username,
+      home_server: user.home_server
+    }, status: :created
   end
 
   # get request
   def sync
-    if session[:home_server] && session[:access_token]
-      sync_channel_name = "sync_channel_#{session[:username]}_#{session[:home_server]}"
+    user = User.from_serialized(session[:user])
+    pp user
 
-      sync_job_jid = SyncJob.perform_async(
-        session[:access_token],
-        session[:home_server],
-        sync_channel_name
-      )
+    client = MatrixSdk::Client.new(user.home_server, read_timeout: 600)
+    client.api.access_token = user.access_token
+    client.sync
 
-      session[:cache_key] = "sync_job:#{sync_job_jid}"
+    user.cache_key = SecureRandom.uuid
+    Rails.cache.write(user.cache_key, YAML.dump(client), expires_in: 24.hours)
 
-      ActionCable.server.broadcast(sync_channel_name, { message: 'SYNCJOB_STARTED' })
-
-      render json: {}, status: :created
-    else
-      render json: {
-               error: 'couldnt find your access token'
-             },
-             status: :unprocessable_entity
-    end
+    render json: {
+      username: user.username,
+      home_server: user.home_server
+    }, status: :created
   end
 
   # TODO: this entire session cache_key might be better
@@ -89,8 +81,8 @@ class SessionsController < ApplicationController
 
   def session_params
     params.require(:session).permit(:username,
-                                    :password,
-                                    :home_server,
-                                    :room_id)
+                                 :password,
+                                 :home_server,
+                                 :room_id)
   end
 end

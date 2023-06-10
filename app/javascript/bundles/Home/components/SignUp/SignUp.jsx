@@ -1,15 +1,14 @@
-import request from 'axios';
+import request from "axios";
 
-import React, {useState} from 'react';
-import PropTypes from 'prop-types';
-import Loading from '../Loading/Loading'
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import Loading from "../Loading/Loading";
 
 // TODO: rename to SignUpForm
-const SignUp = ({onSuccess}) => { 
-
+const SignUp = ({ onSuccess }) => {
   // INFO: this declares a new state to be Used and the second arg is the setter function
   const [user, setUser] = useState({});
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
   const [greeting, setGreeting] = useState(<p></p>);
   const [homeServer, setHomeServer] = useState();
 
@@ -18,9 +17,9 @@ const SignUp = ({onSuccess}) => {
     event.preventDefault();
 
     const formHomeServer = event.target.elements.homeServer.value;
- 
+
     // username already set through setUsername at this point
-    // TODO: make this interate with the Home component this is 
+    // TODO: make this interate with the Home component this is
     // somewhat redundant
     const greetingString = (
       <div>
@@ -28,22 +27,22 @@ const SignUp = ({onSuccess}) => {
         <p>Checking your credentials against {formHomeServer}</p>
       </div>
     );
-    setGreeting(<Loading text={ greetingString } />);
+    setGreeting(<Loading text={greetingString} />);
 
-    let user = {
-      username: event.target.elements.username.value,
-      password: event.target.elements.password.value,
-      // NOTE: dont send https because only want the domain
-      home_server: formHomeServer ,
-    }
+    let requestData = {
+        username: event.target.elements.username.value,
+        // NOTE: dont send https because only want the domain
+        home_server: formHomeServer,
+        password: event.target.elements.password.value,
+    };
 
     const requestConfig = {
-      responseType: 'json',
+      responseType: "json",
       headers: ReactOnRails.authenticityHeaders(),
     };
 
     request
-      .post('/session', user, requestConfig)
+      .post("/session", requestData, requestConfig)
       .then((response) => {
         onSuccess(response.data);
       })
@@ -56,40 +55,42 @@ const SignUp = ({onSuccess}) => {
     setUsername(event.target.value);
   };
 
-  return ( 
+  return (
     <div>
-
       {greeting}
 
-    <form onSubmit={handleSubmit}>
-    <fieldset>
+      <form onSubmit={handleSubmit}>
+        <fieldset>
+          <label>
+            <p>Home Server</p>
+            <span>
+              https:// <input type="text" name="homeServer" />
+            </span>
+          </label>
 
-    <label>
-    <p>Home Server</p>
-    <span>
-      https:// <input type="text" name="homeServer"/>
-    </span>
-    </label>
+          <label>
+            <p>Name</p>
+            <input
+              type="text"
+              value={username}
+              onChange={handleUsernameChange}
+              name="username"
+            />
+          </label>
 
-    <label>
-    <p>Name</p>
-    <input type="text" value={username} onChange={handleUsernameChange} name="username"/>
-    </label>
-
-    <label>
-    <p>Password</p>
-    <input type="password" name="password"/>
-    </label>
-
-    </fieldset>
-    <button type="submit">Submit</button>
-    </form>
+          <label>
+            <p>Password</p>
+            <input type="password" name="password" />
+          </label>
+        </fieldset>
+        <button type="submit">Submit</button>
+      </form>
     </div>
-  )
-}
+  );
+};
 
-SignUp.propTypes = { 
-    onSuccess: PropTypes.func.isRequired,
-  }
+SignUp.propTypes = {
+  onSuccess: PropTypes.func.isRequired,
+};
 
 export default SignUp;
