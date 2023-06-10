@@ -49,4 +49,56 @@ React diff:
   import request from 'axios'
   request.post('user', {user}, requestConfig);
   ```
-- 
+
+## Props 
+
+- defining PropTypes is good practice 
+- using `const [stateName, setStateName] = useState(props.name)` to define
+  states 
+  - component rerenders on the `setState`
+  - setState is async and might take a bit so you can run into errors when 
+    doing things like :   
+    ```js 
+    const [user, setUser] = useState(null)
+    setUser(userFromFormData);
+    if (user) { 
+    }
+    ```
+    - this would not trigger the if because the setUser is still running 
+    - either use the form data or use the setState callback param
+    ``` js
+    setCount(prevCount => prevCount + 1, () => {
+         console.log('Count has been updated:', count);
+       });
+    ```
+- using `useEffect` to fetch stuff from an external thing is nice
+  example: 
+  ```js
+  useEffect(() => {
+    const connection = createConnection(serverUrl, roomId);
+    connection.connect();
+    return () => {
+      connection.disconnect();
+    };
+  }, [serverUrl, roomId]);
+  // NOTE: this retriggers when the serverUrl or roomId (Dependencies) changes
+  ```
+
+## ActionCable Snippet
+
+  ```js 
+  import consumer from "channels/consumer";
+
+  useEffect(() => {
+    const subscription = consumer.subscriptions.create("SyncChannel", {
+      received(data) {
+        if (data.message === "SYNCJOB_COMPLETE") {
+          setSyncComplete(true);
+          getRooms();
+        }
+      },
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  ```

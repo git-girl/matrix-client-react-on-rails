@@ -11,6 +11,7 @@ import * as ActionCable from "@rails/actioncable";
 
 // Home is a function with arg props that returns the body
 const Home = (props) => {
+  const [syncComplete, setSyncComplete] = useState(false)
   const [user, setUser] = useState(props.user);
   const [rooms, setRooms] = useState(props.rooms);
 
@@ -19,18 +20,10 @@ const Home = (props) => {
       responseType: "json",
       headers: ReactOnRails.authenticityHeaders(),
     };
-    // TODO: 
-    // this needs to do something like enable the consomuer
-    // ws connection
-    
     request
       .get("/sync", user, requestConfig)
       .then(() => {
-        // BUG: this Is the issue this only means that i triggered
-        // the sync but not that it is complete.
-        // i need to get a thing that is check for sync complete
         setUser(newUser);
-        console.log("finished sync request  trigger")
       })
       .catch((error) => {
         // TODO: handle error
@@ -56,17 +49,12 @@ const Home = (props) => {
   useEffect(() => {
     const subscription = consumer.subscriptions.create("SyncChannel", {
       received(data) {
-        console.debug(data)
         if (data.message === "SYNCJOB_COMPLETE") {
+          setSyncComplete(true);
           getRooms();
         }
       },
-      connected() { 
-        console.log("CONNECTED TO THE SYNC CHANNEL")
-      }
     });
-
-    // Clean up the subscription when the component unmounts
     return () => {
       subscription.unsubscribe();
     };
@@ -76,8 +64,6 @@ const Home = (props) => {
   // <h2 className={style.fancy_font}>{user.username}</h2>
 
   if (Util.object_vals_not_null(user)) {
-    console.debug(user);
-    console.log(rooms);
     if (rooms) {
       return (
         <div>
@@ -87,9 +73,7 @@ const Home = (props) => {
         </div>
       );
     } else {
-      // getRooms();
-
-      return <Loading text="Fetching your Rooms" />;
+           return <Loading text="Fetching your Rooms" />;
     }
   } else {
     return (
