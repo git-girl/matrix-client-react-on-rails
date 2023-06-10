@@ -23,3 +23,31 @@ class MatrixClientJob
     ActionCable.server.broadcast(matrix_client_channel_name, { message: event })
   end
 end
+
+# class MyWorker
+#   include Sidekiq::Worker
+#
+#   def perform
+#     # Connect to the ActionCable channel
+#     channel = ActionCable.server.broadcasting_adapter.new(ServerChannel)
+#
+#     # Subscribe to the desired channel
+#     subscription = channel.subscribe do |data|
+#       # Process the received data and perform actions based on it
+#       process_data(data)
+#     end
+#
+#     # Keep the worker alive to continuously listen for new data
+#     loop do
+#       sleep 1
+#     end
+#   ensure
+#     # Unsubscribe from the channel when the worker stops
+#     channel.unsubscribe(subscription) if channel && subscription
+#   end
+#
+#   def process_data(data)
+#     # Implement your logic here to process the received data
+#     # and perform the necessary actions
+#   end
+# end

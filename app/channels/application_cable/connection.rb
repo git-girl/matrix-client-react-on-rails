@@ -15,11 +15,11 @@ module ApplicationCable
     # succesfully they can access others streams. that would invalidate
     # their session though. this is not very secure.
     def matrix_authed_user
-      # WARNING: Hack
       session = request.env['rack.session']
+      user = User.from_serialized(session[:user])
 
-      if session[:username] && session[:home_server]
-        { username: session[:username], home_server: session[:home_server] }
+      if user.username && user.home_server
+        user
       else
         reject_unauthorized_connection
       end

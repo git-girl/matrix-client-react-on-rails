@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MatrixClientChannel < ApplicationCable::Channel
   def subscribed
     stream_from matrix_client_channel_name
@@ -10,7 +12,8 @@ class MatrixClientChannel < ApplicationCable::Channel
   private
 
   def matrix_client_channel_name
-    user = User.from_serialized(session[:user])
+    p_user = params[:user]
+    user = User.new(p_user['username'], p_user['home_server'])
     user.matrix_client_channel_name
   end
 end

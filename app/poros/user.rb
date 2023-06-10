@@ -7,7 +7,7 @@ require 'yaml'
 class User
   attr_accessor :username, :home_server, :access_token, :cache_key
 
-  def initialize(username, home_server, access_token, cache_key)
+  def initialize(username, home_server, access_token = nil, cache_key = nil)
     self.username = username
     self.home_server = home_server
     self.access_token = access_token

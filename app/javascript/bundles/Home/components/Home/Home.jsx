@@ -51,7 +51,9 @@ const Home = (props) => {
       .get("/rooms", user, requestConfig)
       .then((response) => {
         // response is a id display_name kv pair
-        setRooms(response.data, setActiveRoom(rooms[0]));
+        // TODO: write this back in did it for debug
+        // setRooms(response.data, setActiveRoom(rooms[0]));
+        setRooms(response.data);
         // store it in loaclStorage
         window.localStorage.setItem("rooms", JSON.stringify(response.data));
       })
@@ -61,6 +63,7 @@ const Home = (props) => {
   };
 
   // SINGLE ROOM 
+  // TODO: switch to set current room -> send a join request over actionCabl
   const getRoom = (room_id) => { 
     const requestConfig = {
       responseType: "json",
@@ -73,7 +76,7 @@ const Home = (props) => {
     request
       .post("/stream_room", requestData , requestConfig)
       .then((response) => {
-        console.debug(response)
+        // console.debug(response)
       })
       .catch((error) => {
         // TODO: handle error
@@ -94,7 +97,7 @@ const Home = (props) => {
           </div>
 
           <div className={style.active_room}> 
-            <ActiveRoom room={activeRoom}/>
+            <ActiveRoom room={activeRoom} user={user}/>
           </div>
         </div>
       );
