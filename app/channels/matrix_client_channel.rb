@@ -9,6 +9,10 @@ class MatrixClientChannel < ApplicationCable::Channel
     # Any cleanup needed when channel is unsubscribed
   end
 
+  def receive(request)
+    # pp request
+  end
+
   private
 
   def matrix_client_channel_name

@@ -66,26 +66,12 @@ class SessionsController < ApplicationController
     render json: rooms, status: :created
   end
 
+  # TODO: This should just get triggered at sync
   def stream_room
     user = User.from_serialized(session[:user])
-
-    # serialized_client = Rails.cache.read(user.cache_key)
-    # client = deserialze_client(serialized_client)
-    #
-    # puts client.classsessioncont
-    # client.listen_for_events(timeout: 5)
-
-    client = MatrixSdk::Client.new(user.home_server, read_timeout: 600)
-    client.api.access_token = user.access_token
-    client.sync
-    client.listen_for_events(timeout: 5)
-
-    mcj_id = MatrixClientJob.perform_async(user.serialize, user.matrix_client_channel_name)
-    # puts client.methods
-    # room = join_room(serialized_client, session_params[:room_id])
-    # client.join_room(room)
-    # room.on_event.add_handler { |event| on_message(room, event) }
-    # client.start_listener_thread
+    mcj_id = MatrixClientJob.perform_async(user.serialize,
+                                           user.matrix_client_channel_name,
+                                           session_params[:room_id])
 
     render json: {}, status: :created
   end

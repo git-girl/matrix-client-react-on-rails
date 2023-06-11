@@ -75,4 +75,10 @@ module AppMatrixUtils
                     permitted_classes: PERMITTED_CLASSES,
                     aliases: true)
   end
+
+  def deserialze_matrix_thing(serialized_matrix_thing)
+    Psych.safe_load(serialized_matrix_thing,
+                    permitted_classes: PERMITTED_CLASSES,
+                    aliases: true)
+  end
 end

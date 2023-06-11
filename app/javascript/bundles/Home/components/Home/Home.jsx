@@ -71,7 +71,7 @@ const Home = (props) => {
     };
 
     const requestData = { 
-      room_id: room_id
+      room_id: "!YcdlKUHdHYxJJYBIkM:matrix.org"
     }
     request
       .post("/stream_room", requestData , requestConfig)
@@ -107,7 +107,7 @@ const Home = (props) => {
   } else {
     return (
       <div>
-        <h2>Hey there, you can signup below</h2>
+        <h3>Hey there, you can sign into your existing matrix account on a server below</h3>
         <SignUp onSuccess={handleSignUpSuccess} />
       </div>
     );
