@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import style from "./ActiveRoom.module.css";
 import Loading from "../Loading/Loading";
 import consumer from "channels/consumer";
+// NOTE: Olm is already inited from the Home Component and can be used here
 
 const ActiveRoom = (props) => {
   const [room, setRoom] = useState(props.room);
@@ -18,12 +19,44 @@ const ActiveRoom = (props) => {
   //   getRoom(roomId);
   // }
   // getRoomData(room);
-
   // TODO: I THINK THIS IS NOT RERENDERING ONCE I SETSTATE
   // THE MATRIXEVENTS
-
+  //
   const addMatrixEvent = (newEvent) => {
     setMatrixEvents((prevEvents) => [...prevEvents, newEvent]);
+  };
+
+  const ageToHumanReadable = (ms) => {
+    let x = ms / 1000;
+    let seconds = Math.round(x % 60);
+    x /= 60;
+    let minutes = Math.round(x % 60);
+    x /= 60;
+    let hours = Math.round(x % 24);
+    x /= 24;
+    let days = Math.round(x);
+  
+    if (days > 0) {
+      return `${days} days ago`;
+    } else if (hours > 0) {
+      return `${hours}h ${minutes}m ago`;
+    } else if (minutes > 0) {
+      return `${minutes}m ago`;
+    } else {
+      return `${seconds}s ago`;
+    }
+  };
+
+  // Oh boi
+  const resurectSerializedJSON = (serialziedJSON) => {
+    const index = serialziedJSON.indexOf(": ");
+    const key = serialziedJSON.slice(0, index);
+    let value = serialziedJSON.slice(index + 1);
+    value = value.replace(/\\"/g, '"');
+    // remove the last " the first gets removed by key removal
+    value = value.slice(1, -1);
+
+    return JSON.parse(value)
   };
 
   const setupSubscription = () => {
@@ -34,29 +67,18 @@ const ActiveRoom = (props) => {
           console.log("WS Connection established");
         },
         received(data) {
-          if (data.hasOwnProperty('events')) { 
-            console.debug(data.events);
+          if (data.hasOwnProperty("events")) {
+
             setMatrixEvents(data.events);
-          } else if (data.hasOwnProperty('event')) {
-            // NOTE: there is some weird escaped thing going on but 
-            // this doesnt apply to the first key :shrug: 
-            // so im removing the first thing -> room.encrypte:\s 
-            // WARN: This is probably not great and you need to replace the first 
-            // key regardless  of it being m.room.encrypted.
-            const firstKeyRemovedEvent = data.event.replace(/m\.room\.encrypted:\s+/, '');
-            const newMatrixEvent = JSON.parse(firstKeyRemovedEvent)
-            addMatrixEvent(newMatrixEvent)
 
-            if (data.hasOwnProperty('keys')) {
-              console.debug(JSON.parse(data.keys))
-              setMemberKeys()
-            } else {
-              console.error("Didn't get keys for the room from WS")
-            }
+          } else if (data.hasOwnProperty("event")) {
 
-          }
-          else {
-            console.log("GOT AN UNHANDLED MESSAGE FROM MatrixClientChannel");
+            const newMatrixEvent = resurectSerializedJSON(data.event);
+            addMatrixEvent(newMatrixEvent);
+            // Keys receive was here :( 
+
+          } else {
+            console.log("Got an unhandled message from MatrixClientChannel");
             console.debug(data);
           }
         },
@@ -64,7 +86,7 @@ const ActiveRoom = (props) => {
     );
 
     const send = (data) => {
-      subscription.perform('receive', { data: data });
+      subscription.perform("receive", { data: data });
     };
 
     return { subscription, send };
@@ -73,7 +95,7 @@ const ActiveRoom = (props) => {
   useEffect(() => {
     const { subscription, send } = setupSubscription();
 
-    send({ message: 'Hello, backend!' });
+    send({ message: "Hello, backend!" });
 
     return () => {
       subscription.unsubscribe();
@@ -83,35 +105,31 @@ const ActiveRoom = (props) => {
   // TODO: move this to eventsComponent
   //       and have this ActiveRooms component only take care of the organizing
   //       of sendmessageHtml and the Event list Html
- 
-const eventListHTML = matrixEvents.map((event) => {
-  let sender = 'sender';
-  let msgType = 'msgType';
-  let timestamp = 'timestamp';
-  let body = 'body';
 
-  try {
-    sender = event.sender;
-    msgType = event.msgType;
-    timestamp = event.timestamp;
-    body = event.body;
-  } catch (error) {
-    console.error('Error accessing event properties:', error);
-  }
+  const eventListHTML = matrixEvents.map((event) => {
+    let sender = "sender";
+    let timestamp = "timestamp";
+    let body = "body";
 
-  // WARN: somehow event_id is not unique across events :shrug: 
-  return (
-    <div key={event.event_id} className={style.matrixEventContainer}>
-      <div className={style.matrixEventInfo}>
-        {sender}
-        <br></br>
-        {msgType}
-        <div className={style.matrixEventTimestamp}>{timestamp}</div>
+    try {
+      sender = event.sender;
+      timestamp = ageToHumanReadable(event.unsigned.age);
+      body = event.content.body || event.content.ciphertext;
+    } catch (error) {
+      console.error("Error accessing event properties:", error);
+    }
+
+    // WARN: somehow event_id is not unique across events :shrug:
+    return (
+      <div key={event.event_id} className={style.matrixEventContainer}>
+        <div className={style.matrixEventInfo}>
+          {sender}
+          <div className={style.matrixEventTimestamp}>{timestamp}</div>
+        </div>
+        <div className={style.matrixEventBody}>{body}</div>
       </div>
-      <div className={style.matrixEventBody}>{body}</div>
-    </div>
-  );
-});
+    );
+  });
 
   const sendMessageHTML = <div></div>;
 

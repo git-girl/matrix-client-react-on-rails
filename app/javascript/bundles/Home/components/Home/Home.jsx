@@ -8,6 +8,9 @@ import Util from "../../utilities.js";
 import Loading from "../Loading/Loading";
 import consumer from "channels/consumer";
 import ActiveRoom from "../ActiveRoom/ActiveRoom"
+// HACK:
+// I got Olm itself to work but as Olm requires you to 
+import Olm from "../../../../../../node_modules/@matrix-org/olm/olm_legacy.js"
 
 // Home is a function with arg props that returns the body
 const Home = (props) => {
@@ -25,6 +28,10 @@ const Home = (props) => {
   )
 
   const handleSignUpSuccess = (newUser) => {
+    // Init olm for e2e
+    Olm.init()
+    .then(console.log("Olm inited"))
+
     const requestConfig = {
       responseType: "json",
       headers: ReactOnRails.authenticityHeaders(),
@@ -71,7 +78,7 @@ const Home = (props) => {
     };
 
     const requestData = { 
-      room_id: "!YcdlKUHdHYxJJYBIkM:matrix.org"
+      room_id: room_id
     }
     request
       .post("/stream_room", requestData , requestConfig)

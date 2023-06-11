@@ -1,9 +1,12 @@
 # Todos for the last day 
 
-- [ ] set up the job so you can stream requests to the client via ActionCable  
-  - ActionCable.server.event_loop
-
 - [ ] De- and Encryption
+  - what can i use to meet the node crypto dependency in 
+    olm.js  ?
+    Element uses: 
+    - crypto-browserify npm package 
+    - matrix-sdk-crypto
+
 - [ ] Message sending 
 
 - [ ] Change the resume accordingly
@@ -16,4 +19,5 @@
 - [ ] Clean up code 
   - [ ] delete old channels and stuff like that
 - [ ] Readme
+
 

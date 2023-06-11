@@ -46,8 +46,6 @@ class SessionsController < ApplicationController
     }, status: :created
   end
 
-  # TODO: this entire session cache_key might be better
-  # implemeneted as an ActionCable thing no?
   def rooms
     user = User.from_serialized(session[:user])
     serialized_client = Rails.cache.read(user.cache_key)
@@ -59,8 +57,6 @@ class SessionsController < ApplicationController
       }
     end
 
-    # TODO: also get something like current room from the room
-    # you last sent a message
     rooms = get_rooms(serialized_client)
 
     render json: rooms, status: :created
@@ -69,11 +65,13 @@ class SessionsController < ApplicationController
   # TODO: This should just get triggered at sync
   def stream_room
     user = User.from_serialized(session[:user])
-    mcj_id = MatrixClientJob.perform_async(user.serialize,
-                                           user.matrix_client_channel_name,
-                                           session_params[:room_id])
+    mcj_id = MatrixListenerJob.perform_async(user.serialize,
+                                             user.matrix_client_channel_name,
+                                             session_params[:room_id])
 
-    render json: {}, status: :created
+    user = user.update_room_and_job(session_params[:room_id], mcj_id)
+    session[:user] = user.serialize
+    render json: { room_id: user.current_room_id }, status: :created
   end
 
   private

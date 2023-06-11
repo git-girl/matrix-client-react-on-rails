@@ -6,19 +6,27 @@
 
 body {
   margin: 2.5%;  
+  font-family: 'Source Code Pro';
 }
 
 .flex_container { 
   display: flex;
+  max-height: 75vh;
+  height: 75vh;
 }
 
 .active_room { 
   flex: 8;
   border: 1px solid #000;
-
+  height: 100%;
+  max-height: 100%;
+  overflow: auto;
 }
 
 .room_list {
   flex: 1;
   padding-right: 2.5%;
+  height: 100%;
+  max-height: 100%;
+  overflow: auto;
 }
