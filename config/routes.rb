@@ -19,5 +19,8 @@ Rails.application.routes.draw do
   post '/stream_room', to:
     'sessions#stream_room'
 
+  post '/send_message', to:
+    'sessions#send_message'
+
   root 'home#index'
 end

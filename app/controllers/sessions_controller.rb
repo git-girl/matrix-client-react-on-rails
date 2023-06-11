@@ -74,12 +74,29 @@ class SessionsController < ApplicationController
     render json: { room_id: user.current_room_id }, status: :created
   end
 
+  def send_message
+    user = User.from_serialized(session[:user])
+
+    client = MatrixSdk::Client.new(user.home_server, read_timeout: 600)
+    client.api.access_token = user.access_token
+    client.sync
+
+    room = client.find_room(user.current_room_id)
+    # TODO: once internet is back
+
+    puts room.name
+    room.send_text session_params[:message]
+
+    render json: { room_id: user.current_room_id }, status: :created
+  end
+
   private
 
   def session_params
     params.require(:session).permit(:username,
                                     :password,
                                     :home_server,
-                                    :room_id)
+                                    :room_id,
+                                    :message)
   end
 end

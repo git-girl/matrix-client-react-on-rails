@@ -16,3 +16,20 @@
 .matrixEventBody { 
   padding-left: 10%;
 }
+
+
+.messageHistoryWindow {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.messageWriteWindow {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.messageWriteWindow input {
+  flex-grow: 1;
+  margin-right: 10px;
+}

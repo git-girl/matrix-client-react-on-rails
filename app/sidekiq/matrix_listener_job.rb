@@ -16,8 +16,7 @@ class MatrixListenerJob
     user = User.from_serialized(serialized_user)
     client = sync_and_init_matrix_client(user)
     # there Is no room listener thread here yet on the client
-    room = client.find_room(inital_room_id) 
-      .event_history_limit(100)
+    room = client.find_room(inital_room_id)
     ActionCable.server.broadcast(matrix_client_channel_name,
                                  { events: room.events })
 
@@ -47,8 +46,7 @@ class MatrixListenerJob
 
   def self.cancel!(jid)
     # Set redis cahce key cancelled-JID to 1 with an expiration time out 24 hours
-    full_day = 86_400
-    Sidekiq.redis { |c| c.setex("cancelled-#{jid}", full_day, 1) }
+    Rails.cache.write("cancelled-#{jid}", 1, expires_in: 24.hours)
   end
 
   def cancelled?

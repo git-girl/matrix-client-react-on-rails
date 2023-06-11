@@ -1,27 +1,15 @@
 import PropTypes from "prop-types";
 import React, { useState, useEffect } from "react";
+import ReactDOM from 'react-dom';
 import style from "./ActiveRoom.module.css";
 import Loading from "../Loading/Loading";
 import consumer from "channels/consumer";
-// NOTE: Olm is already inited from the Home Component and can be used here
 
 const ActiveRoom = (props) => {
   const [room, setRoom] = useState(props.room);
   const [user] = useState(props.user);
   const [matrixEvents, setMatrixEvents] = useState([]);
-  const [memeberKeys, setMemberKeys] = useState([]);
-  const getRoom = props.getRoom;
 
-  // TODO: this can trigger room load but put in a
-  // better place so i dont get constant requests
-  // const getRoomData = (room) => {
-  //   const roomId = Object.keys(room)[0];
-  //   getRoom(roomId);
-  // }
-  // getRoomData(room);
-  // TODO: I THINK THIS IS NOT RERENDERING ONCE I SETSTATE
-  // THE MATRIXEVENTS
-  //
   const addMatrixEvent = (newEvent) => {
     setMatrixEvents((prevEvents) => [...prevEvents, newEvent]);
   };
@@ -131,9 +119,11 @@ const ActiveRoom = (props) => {
     );
   });
 
-  const sendMessageHTML = <div></div>;
-
-  return eventListHTML;
+ return (
+   <>
+   { eventListHTML }
+   </>
+ );
 };
 
 ActiveRoom.propTypes = {

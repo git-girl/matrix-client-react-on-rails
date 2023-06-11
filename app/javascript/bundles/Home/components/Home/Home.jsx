@@ -7,30 +7,25 @@ import request from "axios";
 import Util from "../../utilities.js";
 import Loading from "../Loading/Loading";
 import consumer from "channels/consumer";
-import ActiveRoom from "../ActiveRoom/ActiveRoom"
-// HACK:
-// I got Olm itself to work but as Olm requires you to 
-import Olm from "../../../../../../node_modules/@matrix-org/olm/olm_legacy.js"
+import ActiveRoom from "../ActiveRoom/ActiveRoom";
+import Olm from "../../../../../../node_modules/@matrix-org/olm/olm_legacy.js";
+import SendMessage from "../SendMessage/SendMessage";
 
-// Home is a function with arg props that returns the body
 const Home = (props) => {
-  // INFO: you can use syncComlete if you add stuff to change
-  // the user details as to not trigger a sync
-  const [syncComplete, setSyncComplete] = useState(false);
-  const [user, setUser] = useState(props.user);
+   const [user, setUser] = useState(props.user);
   const [rooms, setRooms] = useState(Util.tryGetRoomsLocalStorage());
   // TODO: also get something like current room from the room
   // you last sent a message
-  const [activeRoom, setActiveRoom] = useState( () => {
+  const [activeRoom, setActiveRoom] = useState(() => {
     if (Util.tryGetRoomsLocalStorage()) {
-      return Util.getFirstElementOfRooms(rooms)
-    }}
-  )
+      return Util.getFirstElementOfRooms(rooms);
+    }
+  });
 
   const handleSignUpSuccess = (newUser) => {
     // Init olm for e2e
-    Olm.init()
-    .then(console.log("Olm inited"))
+    // rip :( 
+    Olm.init().then(console.log("Olm inited"));
 
     const requestConfig = {
       responseType: "json",
@@ -57,11 +52,7 @@ const Home = (props) => {
     request
       .get("/rooms", user, requestConfig)
       .then((response) => {
-        // response is a id display_name kv pair
-        // TODO: write this back in did it for debug
-        // setRooms(response.data, setActiveRoom(rooms[0]));
         setRooms(response.data);
-        // store it in loaclStorage
         window.localStorage.setItem("rooms", JSON.stringify(response.data));
       })
       .catch((error) => {
@@ -69,42 +60,40 @@ const Home = (props) => {
       });
   };
 
-  // SINGLE ROOM 
+  // SINGLE ROOM
   // TODO: switch to set current room -> send a join request over actionCabl
-  const getRoom = (room_id) => { 
+  const getRoom = (room_id) => {
     const requestConfig = {
       responseType: "json",
       headers: ReactOnRails.authenticityHeaders(),
     };
 
-    const requestData = { 
-      room_id: room_id
-    }
+    const requestData = {
+      room_id: room_id,
+    };
     request
-      .post("/stream_room", requestData , requestConfig)
-      .then((response) => {
-        // console.debug(response)
+      .post("/stream_room", requestData, requestConfig)
+      .then(() => {
+        // setActiveRoom(`loading room: ${room_id}`);
       })
       .catch((error) => {
         // TODO: handle error
       });
   };
-  // TODO: and a username component
-  // -> could have a link for settings but meh
-  // <h2 className={style.fancy_font}>{user.username}</h2>
 
   if (Util.object_vals_not_null(user)) {
     if (rooms) {
       return (
         <div className={style.flex_container}>
-          <div className={style.room_list}> 
+          <div className={style.room_list}>
             <ul>
               <RoomsList rooms={rooms} roomEnterClick={getRoom} />
             </ul>
           </div>
 
-          <div className={style.active_room}> 
-            <ActiveRoom room={activeRoom} user={user} getRoom={getRoom}/>
+          <div className={style.active_room}>
+            <ActiveRoom room={activeRoom} user={user} getRoom={getRoom} />
+            <SendMessage room={activeRoom} user={user} />
           </div>
         </div>
       );
@@ -114,7 +103,10 @@ const Home = (props) => {
   } else {
     return (
       <div>
-        <h3>Hey there, you can sign into your existing matrix account on a server below</h3>
+        <h3>
+          Hey there, you can sign into your existing matrix account on a server
+          below
+        </h3>
         <SignUp onSuccess={handleSignUpSuccess} />
       </div>
     );
