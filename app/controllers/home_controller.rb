@@ -11,7 +11,8 @@ class HomeController < ApplicationController
       @home_props = {
         user: {
           username: user.username,
-          home_server: user.home_server
+          home_server: user.home_server,
+          active_room: [user.current_room_id, user.current_room_name]
         }
       }
     else

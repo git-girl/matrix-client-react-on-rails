@@ -4,15 +4,17 @@ require 'yaml'
 
 # this is a user poro object to just encapsulate data better
 # that is stored in the session
+# NOTE: this should be a thing of User poro and a room Poro where user has a room poro
 class User
-  attr_accessor :username, :home_server, :access_token, :cache_key, :matrix_job_id, :current_room_id
+  attr_accessor :username, :home_server, :access_token, :cache_key, :matrix_job_id, :current_room_id, :current_room_name
 
   def initialize(username,
                  home_server,
                  access_token = nil,
                  cache_key = nil,
                  matrix_job_id = nil,
-                 current_room_id = nil)
+                 current_room_id = nil,
+                 current_room_name = nil)
 
     self.username = username
     self.home_server = home_server
@@ -20,12 +22,14 @@ class User
     self.cache_key = cache_key
     self.matrix_job_id = matrix_job_id
     self.current_room_id = current_room_id
+    self.current_room_name = current_room_name
   end
 
-  def update_room_and_job(room_id, matrix_job_id)
+  def update_room_and_job(room_id, matrix_job_id, current_room_name = nil)
     cancel_current_matrix_job
 
     self.current_room_id = room_id
+    self.current_room_name = current_room_name
     self.matrix_job_id = matrix_job_id
     self
   end

@@ -5,26 +5,21 @@ require Rails.root.join('lib/app_matrix_utils.rb')
 require 'json'
 
 # Sets the client to listen and transmits all data via the client channel
-# For Sending Data there is obviously another job ( cant read ActionCable broadcast here)
 class MatrixListenerJob
   include Sidekiq::Job
   include AppMatrixUtils
 
-  def perform(serialized_user, matrix_client_channel_name, inital_room_id)
+  def perform(serialized_user, matrix_client_channel_name, room_id)
+    puts "PERFORMING"
     return if cancelled?
 
     user = User.from_serialized(serialized_user)
     client = sync_and_init_matrix_client(user)
     # there Is no room listener thread here yet on the client
-    room = client.find_room(inital_room_id)
+    room = client.find_room(room_id)
     ActionCable.server.broadcast(matrix_client_channel_name,
                                  { events: room.events })
 
-    # Rip Olm javascript approach if only there was documentation and time :(
-    # members = room.members
-    # keys = members.map { |member| client.get_user(member).device_keys }
-    #  .. -> { event: JSON.dump(event), keys: JSON.dump(keys) }
-    # TODO: try out room
     room.on_event.add_handler do |event|
       ActionCable.server.broadcast(
         matrix_client_channel_name,
@@ -38,7 +33,7 @@ class MatrixListenerJob
 
       client.sync
     rescue StandardError => e
-      AcionCable.server.broadcast(matrix_client_channel_name,
+      ActionCable.server.broadcast(matrix_client_channel_name,
                                   { message: "failed to sync got: \n#{e}. Waiting 5 seconds to retry." })
       sleep 5
     end
@@ -50,8 +45,7 @@ class MatrixListenerJob
   end
 
   def cancelled?
-    res = Sidekiq.redis { |c| c.exists("cancelled-#{self.jid}") }
-    res == 1
+    Rails.cache.fetch("cancelled-#{self.jid}") == 1
   end
 
   def sync_and_init_matrix_client(user)

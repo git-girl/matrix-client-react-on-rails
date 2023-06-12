@@ -6,13 +6,11 @@ import consumer from "channels/consumer";
 import request from "axios";
 
 const SendMessage = (props) => {
-  const [room, setRoom] = useState(props.room);
   const [user] = useState(props.user);
   const [message, setMessage] = useState('');
 
   const sendMessage = (message) => { 
     const requestData = { 
-      // room: room,
       message: message
     } 
 
@@ -44,6 +42,7 @@ const SendMessage = (props) => {
 
   return (
     <input
+    className={style.fullWidth}
     type="text"
     value={message}
     onChange={handleMessageDraft}
@@ -53,7 +52,6 @@ const SendMessage = (props) => {
 };
 
 SendMessage.propTypes = { 
-  room: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
   // TODO: -> pass back out to home that passes it into ActiveRoom
   // appendMatrixEvent: PropTypes.func.isRequired

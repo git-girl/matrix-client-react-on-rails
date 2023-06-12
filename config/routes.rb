@@ -25,5 +25,8 @@ Rails.application.routes.draw do
   post '/signout', to:
     'sessions#destroy'
 
+  post '/new_room', to:
+    'sessions#create_room'
+
   root 'home#index'
 end

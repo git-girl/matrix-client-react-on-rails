@@ -35,6 +35,7 @@ class SessionsController < ApplicationController
     client.api.access_token = user.access_token
     client.sync
 
+    # I think this has become obsolete
     user.cache_key = SecureRandom.uuid
     Rails.cache.write(user.cache_key, YAML.dump(client), expires_in: 24.hours)
 
@@ -48,16 +49,11 @@ class SessionsController < ApplicationController
 
   def rooms
     user = User.from_serialized(session[:user])
-    serialized_client = Rails.cache.read(user.cache_key)
+    client = MatrixSdk::Client.new(user.home_server, read_timeout: 600)
+    client.api.access_token = user.access_token
+    client.reload_rooms!
 
-    unless serialized_client
-      render json: {
-        error: 'sync not finished',
-        status: :unprocessable_entity
-      }
-    end
-
-    rooms = get_rooms(serialized_client)
+    rooms = get_rooms(client)
 
     render json: rooms, status: :created
   end
@@ -88,6 +84,7 @@ class SessionsController < ApplicationController
     render json: { room_id: user.current_room_id }, status: :created
   end
 
+  # TODO: this should be in a rooms controller
   def create_room
     user = User.from_serialized(session[:user])
 
@@ -95,18 +92,29 @@ class SessionsController < ApplicationController
     client.api.access_token = user.access_token
     client.sync
 
-    # TODO: This should be in a rooms controller
-    room = client.create_room(session_params[:new_room])
+    begin
+      # NOTE: Passing params doesnt work need to create public then set private
+      room = client.create_room(session_params[:new_room])
+      room.invite_only = true
 
-    room.send_text session_params[:message].to_s
+      user.current_room_id = room.room_id
 
-    render json: { room_id: user.current_room_id }, status: :created
+      session[:user] = user.serialize
+      render json: {
+        room: {
+          room_id: user.current_room_id,
+          name: room.display_name
+        }
+      }, status: :created
+    rescue StandardError => e
+      render json: { error: e.to_s }, status: :unprocessable_entity
+    end
   end
 
   def destroy
     user = User.from_serialized(session[:user])
     user.cancel_current_matrix_job
-    user = nil
+
     # TODO: Clear all Cached things
 
     session[:user] = nil

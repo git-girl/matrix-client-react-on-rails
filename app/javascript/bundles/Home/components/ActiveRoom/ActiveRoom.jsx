@@ -5,9 +5,7 @@ import style from "./ActiveRoom.module.css";
 import Loading from "../Loading/Loading";
 import consumer from "channels/consumer";
 
-const ActiveRoom = (props) => {
-  const [room, setRoom] = useState(props.room);
-  const [user] = useState(props.user);
+const ActiveRoom = ({room, user, setLoading}) => {
   const [matrixEvents, setMatrixEvents] = useState([]);
 
   const addMatrixEvent = (newEvent) => {
@@ -53,11 +51,13 @@ const ActiveRoom = (props) => {
       {
         connected() {
           console.log("WS Connection established");
+
         },
         received(data) {
           if (data.hasOwnProperty("events")) {
 
             setMatrixEvents(data.events);
+            setLoading(false);
 
           } else if (data.hasOwnProperty("event")) {
 
@@ -82,8 +82,6 @@ const ActiveRoom = (props) => {
 
   useEffect(() => {
     const { subscription, send } = setupSubscription();
-
-    send({ message: "Hello, backend!" });
 
     return () => {
       subscription.unsubscribe();
@@ -129,7 +127,7 @@ const ActiveRoom = (props) => {
 ActiveRoom.propTypes = {
   room: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
-  getRoom: PropTypes.func.isRequired,
+  setLoading: PropTypes.func.isRequired,
 };
 
 export default ActiveRoom;

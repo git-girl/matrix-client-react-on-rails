@@ -10,17 +10,22 @@ import consumer from "channels/consumer";
 import ActiveRoom from "../ActiveRoom/ActiveRoom";
 import Olm from "../../../../../../node_modules/@matrix-org/olm/olm_legacy.js";
 import SendMessage from "../SendMessage/SendMessage";
+import NewRoom from "../NewRoom/NewRoom";
 
 const Home = (props) => {
   const [user, setUser] = useState(props.user);
-  const [rooms, setRooms] = useState(Util.tryGetRoomsLocalStorage());
-  // TODO: also get something like current room from the room
-  // you last sent a message
-  const [activeRoom, setActiveRoom] = useState(() => {
-    if (Util.tryGetRoomsLocalStorage()) {
-      return Util.getFirstElementOfRooms(rooms);
+  const [rooms, setRooms] = useState();
+  const [activeRoom, setActiveRoom] = useState(props.user.active_room);
+  const [loading, setLoading] = useState(false);
+  
+  const activeRoomName = () => { 
+    if (activeRoom) {
+      return activeRoom[1]
     }
-  });
+    else {
+      return "No active Room"
+    }
+  }
 
   const handleSignUpSuccess = (newUser) => {
     // Init olm for e2e
@@ -35,7 +40,7 @@ const Home = (props) => {
       .get("/sync", user, requestConfig)
       .then(() => {
         // get rooms as a callback so after newUser has been set
-        setUser(newUser, getRooms());
+        setUser(newUser);
       })
       .catch((error) => {
         // TODO: handle error
@@ -59,29 +64,33 @@ const Home = (props) => {
         // TODO: handle error
       });
   };
+  if (Util.object_vals_not_null(user) && !rooms) { 
+    getRooms();
+  }
 
   // SINGLE ROOM
-  // TODO: switch to set current room -> send a join request over actionCabl
-  const getRoom = (room_id) => {
+  const getRoom = (roomId, roomName) => {
+    setLoading(true);
+
     const requestConfig = {
       responseType: "json",
       headers: ReactOnRails.authenticityHeaders(),
     };
 
     const requestData = {
-      room_id: room_id,
+      room_id: roomId,
     };
     request
       .post("/stream_room", requestData, requestConfig)
       .then(() => {
-        // setActiveRoom(`loading room: ${room_id}`);
+        setActiveRoom([roomId, roomName]);
       })
       .catch((error) => {
         // TODO: handle error
       });
   };
 
-  const signOut = () => { 
+  const signOut = () => {
     localStorage.clear();
 
     const requestConfig = {
@@ -89,29 +98,55 @@ const Home = (props) => {
       headers: ReactOnRails.authenticityHeaders(),
     };
 
-    const requestData = {} 
-    
-    request
-    .post("/signout", requestData, requestConfig)
-    .then(() => {
-      setUser({ username: null, home_server: null });
-    })
-  }
+    const requestData = {};
 
+    request.post("/signout", requestData, requestConfig).then(() => {
+      setUser({ username: null, home_server: null });
+    });
+  };
+
+  const activeRoomOrLoadingHTML = () => {
+    // if (!loading) {
+      return (
+            <ActiveRoom
+              room={activeRoom}
+              user={user}
+              setLoading={setLoading}
+            />
+      );
+    // } else { 
+      // const text = `Fetching Room Message for ${activeRoomName()}`
+      // return <Loading text={text} />;
+
+    // }
+  };
   if (Util.object_vals_not_null(user)) {
     if (rooms) {
       return (
         <div className={style.flex_container}>
           <div className={style.room_list}>
+            <b>
               <a onClick={signOut}>SignOut</a>
+            </b>
+            <NewRoom getRooms={getRooms} setActiveRoom={setActiveRoom}/>
             <ul>
               <RoomsList rooms={rooms} roomEnterClick={getRoom} />
             </ul>
           </div>
 
-          <div className={style.roomWindow}>
-              <ActiveRoom className={style.messagesBox} room={activeRoom} user={user} getRoom={getRoom} />
-              <SendMessage className={style.sendMessageBox} room={activeRoom} user={user} />
+         <div className={style.roomWindow}>
+
+            <h4>{activeRoomName()}</h4>
+            <div className={style.messagesBox}>
+              {activeRoomOrLoadingHTML()}
+            </div>
+
+            <div className={style.sendMessageBox}>
+            <SendMessage
+              room={activeRoom}
+              user={user}
+            />
+            </div>
           </div>
         </div>
       );
@@ -125,7 +160,11 @@ const Home = (props) => {
           Hey there, you can sign into your existing matrix account on a server
           below
         </h3>
-        <p> or create an account somewhere <a href="https://joinmatrix.org/servers/">here</a> </p>
+        <p>
+          {" "}
+          or create an account somewhere{" "}
+          <a href="https://joinmatrix.org/servers/">here</a>{" "}
+        </p>
         <SignUp onSuccess={handleSignUpSuccess} />
       </div>
     );

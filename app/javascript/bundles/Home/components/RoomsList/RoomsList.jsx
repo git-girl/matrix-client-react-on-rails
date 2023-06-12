@@ -5,14 +5,14 @@ import style from "./RoomsList.module.css";
 const RoomsList = ({ rooms, roomEnterClick }) => {
   const [roomsList] = useState(Object.entries(rooms));
 
-  const handleRoomClick = (roomId) => {
-    roomEnterClick(roomId);
+  const handleRoomClick = (roomId, roomName) => {
+    roomEnterClick(roomId,  roomName);
   };
 
   return roomsList.map(([roomId, roomName]) => {
     return (
       <li key={roomId}>
-        <a className={style.linkStyle} onClick={() => handleRoomClick(roomId)}>
+        <a className={style.linkStyle} onClick={() => handleRoomClick(roomId, roomName)}>
       {roomName}
       </a>
       </li>
