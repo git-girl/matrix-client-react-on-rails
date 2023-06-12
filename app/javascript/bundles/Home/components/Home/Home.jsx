@@ -17,6 +17,8 @@ const Home = (props) => {
   const [rooms, setRooms] = useState();
   const [activeRoom, setActiveRoom] = useState(props.user.active_room);
   const [loading, setLoading] = useState(false);
+  // for resetting Active Room
+  const [matrixEvents, setMatrixEvents] = useState([]);
   
   const activeRoomName = () => { 
     if (activeRoom) {
@@ -70,7 +72,9 @@ const Home = (props) => {
 
   // SINGLE ROOM
   const getRoom = (roomId, roomName) => {
-    setLoading(true);
+
+    setActiveRoom([roomId, roomName]);
+    setMatrixEvents([]);
 
     const requestConfig = {
       responseType: "json",
@@ -83,8 +87,7 @@ const Home = (props) => {
     request
       .post("/stream_room", requestData, requestConfig)
       .then(() => {
-        setActiveRoom([roomId, roomName]);
-      })
+           })
       .catch((error) => {
         // TODO: handle error
       });
@@ -106,19 +109,28 @@ const Home = (props) => {
   };
 
   const activeRoomOrLoadingHTML = () => {
-    // if (!loading) {
+    if (!loading) {
       return (
             <ActiveRoom
               room={activeRoom}
               user={user}
               setLoading={setLoading}
+              matrixEvents={[]}
             />
       );
-    // } else { 
-      // const text = `Fetching Room Message for ${activeRoomName()}`
-      // return <Loading text={text} />;
-
-    // }
+    } else { 
+      const text = `Fetching Room Message for ${activeRoomName()}`
+      return ( 
+        <>
+        <Loading text={text} />
+          <ActiveRoom
+            room={activeRoom}
+            user={user}
+            setLoading={setLoading}
+          />
+        </>
+      );
+    }
   };
   if (Util.object_vals_not_null(user)) {
     if (rooms) {

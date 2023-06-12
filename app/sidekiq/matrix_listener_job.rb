@@ -10,7 +10,6 @@ class MatrixListenerJob
   include AppMatrixUtils
 
   def perform(serialized_user, matrix_client_channel_name, room_id)
-    puts "PERFORMING"
     return if cancelled?
 
     user = User.from_serialized(serialized_user)

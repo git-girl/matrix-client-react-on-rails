@@ -5,7 +5,7 @@ import style from "./ActiveRoom.module.css";
 import Loading from "../Loading/Loading";
 import consumer from "channels/consumer";
 
-const ActiveRoom = ({room, user, setLoading}) => {
+const ActiveRoom = ({room, user }) => {
   const [matrixEvents, setMatrixEvents] = useState([]);
 
   const addMatrixEvent = (newEvent) => {
@@ -57,13 +57,11 @@ const ActiveRoom = ({room, user, setLoading}) => {
           if (data.hasOwnProperty("events")) {
 
             setMatrixEvents(data.events);
-            setLoading(false);
 
           } else if (data.hasOwnProperty("event")) {
 
             const newMatrixEvent = resurectSerializedJSON(data.event);
             addMatrixEvent(newMatrixEvent);
-            // Keys receive was here :( 
 
           } else {
             console.log("Got an unhandled message from MatrixClientChannel");
@@ -82,6 +80,7 @@ const ActiveRoom = ({room, user, setLoading}) => {
 
   useEffect(() => {
     const { subscription, send } = setupSubscription();
+    setMatrixEvents([])
 
     return () => {
       subscription.unsubscribe();
@@ -117,17 +116,22 @@ const ActiveRoom = ({room, user, setLoading}) => {
     );
   });
 
- return (
+   if (matrixEvents.length > 0) { 
+    return (
    <div>
    { eventListHTML }
    </div>
- );
+    )
+   }else { 
+     return (
+      <Loading text="Loading Messages" />
+     )
+   }
 };
 
 ActiveRoom.propTypes = {
-  room: PropTypes.object.isRequired,
+  room: PropTypes.array.isRequired,
   user: PropTypes.object.isRequired,
-  setLoading: PropTypes.func.isRequired,
 };
 
 export default ActiveRoom;

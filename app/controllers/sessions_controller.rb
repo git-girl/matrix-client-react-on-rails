@@ -100,12 +100,7 @@ class SessionsController < ApplicationController
       user.current_room_id = room.room_id
 
       session[:user] = user.serialize
-      render json: {
-        room: {
-          room_id: user.current_room_id,
-          name: room.display_name
-        }
-      }, status: :created
+      render json: { room_id: user.current_room_id }, status: :created
     rescue StandardError => e
       render json: { error: e.to_s }, status: :unprocessable_entity
     end
