@@ -88,6 +88,31 @@ class SessionsController < ApplicationController
     render json: { room_id: user.current_room_id }, status: :created
   end
 
+  def create_room
+    user = User.from_serialized(session[:user])
+
+    client = MatrixSdk::Client.new(user.home_server, read_timeout: 600)
+    client.api.access_token = user.access_token
+    client.sync
+
+    # TODO: This should be in a rooms controller
+    room = client.create_room(session_params[:new_room])
+
+    room.send_text session_params[:message].to_s
+
+    render json: { room_id: user.current_room_id }, status: :created
+  end
+
+  def destroy
+    user = User.from_serialized(session[:user])
+    user.cancel_current_matrix_job
+    user = nil
+    # TODO: Clear all Cached things
+
+    session[:user] = nil
+    redirect_to root_url, notice: 'Logged out!'
+  end
+
   private
 
   def session_params
@@ -95,6 +120,7 @@ class SessionsController < ApplicationController
                                     :password,
                                     :home_server,
                                     :room_id,
+                                    :new_room,
                                     :message)
   end
 end

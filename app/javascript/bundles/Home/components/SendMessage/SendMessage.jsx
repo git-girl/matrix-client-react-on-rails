@@ -11,8 +11,6 @@ const SendMessage = (props) => {
   const [message, setMessage] = useState('');
 
   const sendMessage = (message) => { 
-    console.log(message)
-
     const requestData = { 
       // room: room,
       message: message
@@ -45,15 +43,12 @@ const SendMessage = (props) => {
   };
 
   return (
-    <div className={style.messageWriteWindow}>
     <input
     type="text"
     value={message}
     onChange={handleMessageDraft}
     onKeyDown={handleMessageSubmit} 
-    placeholder=""
     />
-    </div>
   );
 };
 

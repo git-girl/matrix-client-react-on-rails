@@ -12,7 +12,7 @@ import Olm from "../../../../../../node_modules/@matrix-org/olm/olm_legacy.js";
 import SendMessage from "../SendMessage/SendMessage";
 
 const Home = (props) => {
-   const [user, setUser] = useState(props.user);
+  const [user, setUser] = useState(props.user);
   const [rooms, setRooms] = useState(Util.tryGetRoomsLocalStorage());
   // TODO: also get something like current room from the room
   // you last sent a message
@@ -24,7 +24,7 @@ const Home = (props) => {
 
   const handleSignUpSuccess = (newUser) => {
     // Init olm for e2e
-    // rip :( 
+    // rip :(
     Olm.init().then(console.log("Olm inited"));
 
     const requestConfig = {
@@ -81,19 +81,37 @@ const Home = (props) => {
       });
   };
 
+  const signOut = () => { 
+    localStorage.clear();
+
+    const requestConfig = {
+      responseType: "json",
+      headers: ReactOnRails.authenticityHeaders(),
+    };
+
+    const requestData = {} 
+    
+    request
+    .post("/signout", requestData, requestConfig)
+    .then(() => {
+      setUser({ username: null, home_server: null });
+    })
+  }
+
   if (Util.object_vals_not_null(user)) {
     if (rooms) {
       return (
         <div className={style.flex_container}>
           <div className={style.room_list}>
+              <a onClick={signOut}>SignOut</a>
             <ul>
               <RoomsList rooms={rooms} roomEnterClick={getRoom} />
             </ul>
           </div>
 
-          <div className={style.active_room}>
-            <ActiveRoom room={activeRoom} user={user} getRoom={getRoom} />
-            <SendMessage room={activeRoom} user={user} />
+          <div className={style.roomWindow}>
+              <ActiveRoom className={style.messagesBox} room={activeRoom} user={user} getRoom={getRoom} />
+              <SendMessage className={style.sendMessageBox} room={activeRoom} user={user} />
           </div>
         </div>
       );
@@ -107,6 +125,7 @@ const Home = (props) => {
           Hey there, you can sign into your existing matrix account on a server
           below
         </h3>
+        <p> or create an account somewhere <a href="https://joinmatrix.org/servers/">here</a> </p>
         <SignUp onSuccess={handleSignUpSuccess} />
       </div>
     );

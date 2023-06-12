@@ -120,9 +120,9 @@ const ActiveRoom = (props) => {
   });
 
  return (
-   <>
+   <div>
    { eventListHTML }
-   </>
+   </div>
  );
 };
 

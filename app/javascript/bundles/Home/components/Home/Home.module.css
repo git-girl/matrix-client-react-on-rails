@@ -15,15 +15,24 @@ body {
   height: 75vh;
 }
 
-.active_room { 
+.roomWindow {
   flex: 8;
   border: 1px solid #000;
   height: 100%;
   max-height: 100%;
   overflow: auto;
-
-  display: flex; 
+  display: flex;
   flex-direction: column;
+}
+
+.messagesBox {
+  align-self: flex-start;
+}
+
+.sendMessageBox {
+  min-width: 100%;
+  max-width: 100%;
+  align-self: flex-end;
 }
 
 .room_list {

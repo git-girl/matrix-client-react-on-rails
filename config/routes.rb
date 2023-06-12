@@ -22,5 +22,8 @@ Rails.application.routes.draw do
   post '/send_message', to:
     'sessions#send_message'
 
+  post '/signout', to:
+    'sessions#destroy'
+
   root 'home#index'
 end
