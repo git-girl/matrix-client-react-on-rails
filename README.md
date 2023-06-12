@@ -11,6 +11,8 @@ back the data to your browser.
 This is an unnecessary step and is only there because this is a contrived 
 sample app but I didn't want to write a TODO app.    
 
+![screenshot](.github/assets/MatrixClientReactOnRailsPixeled.png)
+
 ## Project Notes
 
 **There are some open Todos (creating rooms and invites, an error component, better usage of the Loading Component and some cleaning), monday morning was 
