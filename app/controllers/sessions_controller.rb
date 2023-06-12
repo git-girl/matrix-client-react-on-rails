@@ -82,10 +82,8 @@ class SessionsController < ApplicationController
     client.sync
 
     room = client.find_room(user.current_room_id)
-    # TODO: once internet is back
 
-    puts room.name
-    room.send_text session_params[:message]
+    room.send_text session_params[:message].to_s
 
     render json: { room_id: user.current_room_id }, status: :created
   end

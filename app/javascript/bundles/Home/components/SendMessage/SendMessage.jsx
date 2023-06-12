@@ -14,7 +14,7 @@ const SendMessage = (props) => {
     console.log(message)
 
     const requestData = { 
-      room: room,
+      // room: room,
       message: message
     } 
 
@@ -24,10 +24,8 @@ const SendMessage = (props) => {
     };
 
     request
-      .post("/send_message", user, requestConfig)
+      .post("/send_message", requestData, requestConfig)
       .then(() => {
-        // get rooms as a callback so after newUser has been set
-        setUser(newUser, getRooms());
       })
       .catch((error) => {
         // TODO: handle error
