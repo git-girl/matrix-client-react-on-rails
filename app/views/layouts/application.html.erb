@@ -6,9 +6,13 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_pack_tag "application" %>
+  <%= stylesheet_pack_tag('home-bundle',
+                                        media: 'all',
+                                        'data-turbolinks-track': true) %>
 
-    <%= javascript_pack_tag "home-bundle" %>
+  <%= javascript_pack_tag('home-bundle',
+                                       'data-turbolinks-track': true,
+                                       defer: true) %>
   </head>
 
   <body>
