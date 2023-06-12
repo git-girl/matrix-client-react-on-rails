@@ -1,16 +1,15 @@
 import PropTypes from "prop-types";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import style from "./Home.module.css";
 import SignUp from "../SignUp/SignUp";
 import RoomsList from "../RoomsList/RoomsList";
 import request from "axios";
 import Util from "../../utilities.js";
 import Loading from "../Loading/Loading";
-import consumer from "channels/consumer";
 import ActiveRoom from "../ActiveRoom/ActiveRoom";
-import Olm from "../../../../../../node_modules/@matrix-org/olm/olm_legacy.js";
 import SendMessage from "../SendMessage/SendMessage";
 import NewRoom from "../NewRoom/NewRoom";
+import Invite from "../Invite/Invite";
 
 const Home = (props) => {
   const [user, setUser] = useState(props.user);
@@ -30,9 +29,6 @@ const Home = (props) => {
   }
 
   const handleSignUpSuccess = (newUser) => {
-    // Init olm for e2e
-    // rip :(
-    Olm.init().then(console.log("Olm inited"));
 
     const requestConfig = {
       responseType: "json",
@@ -149,6 +145,10 @@ const Home = (props) => {
          <div className={style.roomWindow}>
 
             <h4>{activeRoomName()}</h4>
+            <div className={style.InviteWindowContainer}>
+              Invite User <Invite className={style.inviteWindow} />
+            </div>
+
             <div className={style.messagesBox}>
               {activeRoomOrLoadingHTML()}
             </div>

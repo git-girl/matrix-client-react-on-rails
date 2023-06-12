@@ -100,7 +100,7 @@ class SessionsController < ApplicationController
       user.current_room_id = room.room_id
 
       session[:user] = user.serialize
-      render json: { room_id: user.current_room_id }, status: :created
+      render json: { room: [user.current_room_id, room.display_name] }, status: :created
     rescue StandardError => e
       render json: { error: e.to_s }, status: :unprocessable_entity
     end
@@ -114,6 +114,23 @@ class SessionsController < ApplicationController
 
     session[:user] = nil
     redirect_to root_url, notice: 'Logged out!'
+  end
+
+  def send_invite
+    user = User.from_serialized(session[:user])
+    client = MatrixSdk::Client.new(user.home_server, read_timeout: 600)
+    client.api.access_token = user.access_token
+    client.sync
+
+    begin
+      invited_user = client.get_user(session_params[:username])
+      room = client.find_room(user.current_room_id)
+      room.invite_user(invited_user)
+
+      render json: {}, status: :created
+    rescue StandardError => e
+      render json: { error: e.to_s }, status: :unprocessable_entity
+    end
   end
 
   private

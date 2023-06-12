@@ -56,3 +56,11 @@ body {
   min-height: 100%;
   min-width: 100%;
 }
+
+.InviteWindowContainer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  justify-items: end;
+}
+
+

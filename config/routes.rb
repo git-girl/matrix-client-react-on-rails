@@ -28,5 +28,8 @@ Rails.application.routes.draw do
   post '/new_room', to:
     'sessions#create_room'
 
+  post '/invite_user', to:
+    'sessions#send_invite'
+
   root 'home#index'
 end
